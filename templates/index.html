@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Todo App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .task {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid #ddd;
+            margin-bottom: 5px;
+        }
+        .task.completed {
+            text-decoration: line-through;
+            color: gray;
+        }
+        .actions a {
+            margin-left: 10px;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>TODO APP</h1>
+    
+    <form method="POST" action="/add">
+        <input type="text" name="task" placeholder="Enter a task" required>
+        <button type="submit">Add</button>
+    </form>
+
+    {% if tasks %}
+        {% for task in tasks %}
+            <div class="task {% if task.completed %}completed{% endif %}">
+                <span>{{ task.text }}</span>
+                <div class="actions">
+                    {% if not task.completed %}
+                        <a href="/complete/{{ loop.index0 }}">✓</a>
+                    {% endif %}
+                    <a href="/delete/{{ loop.index0 }}">✕</a>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No tasks yet!</p>
+    {% endif %}
+
+</body>
+</html>
