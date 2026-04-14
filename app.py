@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, request, jsonify
 import json
 
 app = Flask(__name__)
@@ -14,32 +14,38 @@ def save_tasks(tasks):
     with open('tasks.json', 'w') as f:
         json.dump(tasks, f)
 
-@app.route('/')
-def home():
+@app.route('/', methods=['GET'])
+def get_task():
     tasks = load_tasks()
-    return render_template('index.html', tasks=tasks)
+    return jsonify(tasks), 200
 
 @app.route('/add', methods=['POST'])
 def add_task():
     tasks = load_tasks()
-    new_task = request.form['task']
-    tasks.append({'text': new_task, 'completed': False})
+    data = request.get_json()
+    if not data or 'text' not in data:
+        return jsonify({'error': 'text field required'}), 400
+    tasks.append({'text': data['text'] ,'completed': False})
     save_tasks(tasks)
-    return redirect('/')
+    return jsonify({'message':'created new task'}), 201
 
-@app.route('/complete/<int:index>')
+@app.route('/complete/<int:index>', methods = ['PATCH'])
 def complete_task(index):
     tasks = load_tasks()
+    if index >= len(tasks) or index < 0:
+        return jsonify({'error': 'task not found'}), 404
     tasks[index]['completed'] = True
     save_tasks(tasks)
-    return redirect('/')
+    return jsonify({'message': 'task marked complete'}), 200
 
-@app.route('/delete/<int:index>')
+@app.route('/delete/<int:index>', methods=['DELETE'])
 def delete_task(index):
     tasks = load_tasks()
-    del tasks[index]
+    if index >= len(tasks) or index < 0:
+        return jsonify({'error': 'task not found'}), 404
+    deleted = tasks.pop(index)
     save_tasks(tasks)
-    return redirect('/')
+    return jsonify({'deleted':deleted}), 200
 
 if __name__ == '__main__':
     app.run(debug=True)
