@@ -23,7 +23,7 @@ A simple todo application built with Flask.
 ```
 2. Open browser and go to `http://127.0.0.1:5000`
 
-3. tick to mark as completed
+3. click done to mark as complete
 
-4. clcikm X to remove task
+4. click delete to remove task after completion
 
